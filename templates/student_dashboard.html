@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <div class="d-flex align-items-center">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-qrcode me-2"></i> QR Attendance
+            </a>
+            <a class="nav-link ms-2" href="{{ url_for('student_dashboard') }}">
+                <i class="fas fa-home"></i> Home
+            </a>
+        </div>
+        <div class="dropdown">
+            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ student.name }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" href="{{ url_for('student_logout') }}">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('student_dashboard') }}">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-user-circle fa-5x text-primary"></i>
+                    </div>
+                    <h4 class="card-title">{{ student.name }}</h4>
+                    <p class="card-text text-muted">Roll Number: {{ student.roll_number }}</p>
+                    <p class="card-text text-muted">{{ student.college_name }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Your QR Code</h5>
+                </div>
+                <div class="card-body text-center">
+                    <img src="data:image/png;base64,{{ qr_code }}" class="img-fluid mb-3" alt="QR Code">
+                    <div>
+                        <a href="{{ url_for('download_qr') }}" class="btn btn-primary" download>
+                            <i class="fas fa-download"></i> Download QR Code
+                        </a>
+                    </div>
+                    <div class="alert alert-info mt-3" role="alert">
+                        <i class="fas fa-info-circle"></i> Keep this QR code handy for marking your attendance in classes.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Attendance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Session</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in attendance_history %}
+                                <tr>
+                                    <td>{{ record.date }}</td>
+                                    <td>{{ record.time }}</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ record.session }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">{{ record.status }}</span>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">
+                                        <i class="fas fa-info-circle"></i> No attendance records found
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+</script>
+{% endblock %}

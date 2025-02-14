@@ -1,0 +1,186 @@
+/* Custom styles for QR Attendance System */
+
+/* Base styles */
+body {
+    background-color: #f8f9fa;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Navbar styles */
+.navbar {
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    color: #0d6efd;
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.navbar-brand:hover {
+    color: #0b5ed7;
+}
+
+.btn-link {
+    color: #6c757d;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+}
+
+.btn-link:hover {
+    color: #0d6efd;
+}
+
+/* Card styles */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* Button styles */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0b5ed7;
+    transform: translateY(-2px);
+}
+
+.btn-outline-primary {
+    color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-outline-primary:hover {
+    background-color: #0d6efd;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Feature icons */
+.features .card {
+    height: 100%;
+}
+
+.features .fas {
+    color: #0d6efd;
+}
+
+/* Form styles */
+.form-control {
+    padding: 0.75rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Alert styles */
+.alert {
+    border-radius: 5px;
+    border: none;
+    padding: 1rem;
+}
+
+/* Admin dashboard styles */
+.session-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.attendance-table {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.attendance-table th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    padding: 1rem;
+}
+
+.attendance-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* QR Code styles */
+.qr-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+/* QR Scanner styles */
+#reader {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+#reader video {
+    border-radius: 10px;
+}
+
+/* Animation for success message */
+.alert-success {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .features .card {
+        margin-bottom: 1rem;
+    }
+}

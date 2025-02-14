@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Attendance System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+        .navbar-brand {
+            color: #0d6efd;
+            font-weight: 500;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,.05);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .icon-large {
+            font-size: 48px;
+            color: #0d6efd;
+            margin-bottom: 1rem;
+        }
+        .feature-icon {
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            border-radius: 50%;
+            background-color: #e7f1ff;
+            color: #0d6efd;
+            margin: 0 auto 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-qrcode me-2"></i>QR Attendance
+            </a>
+            <div class="ms-auto">
+                <a href="{{ url_for('student_login') }}" class="btn btn-link">Login</a>
+                <a href="{{ url_for('student_register') }}" class="btn btn-link">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="text-center mb-4">
+            <h1 class="display-5 mb-3">
+                <i class="fas fa-qrcode me-2"></i>QR Attendance System
+            </h1>
+            <p class="text-muted">A modern, secure, and efficient way to track attendance using QR codes</p>
+        </div>
+
+        <div class="row justify-content-center g-4 mb-5">
+            <!-- Admin Login Card -->
+            <div class="col-md-5">
+                <div class="card h-100">
+                    <div class="card-body text-center p-5">
+                        <div class="icon-large mb-3">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h3 class="mb-3">Admin Login</h3>
+                        <p class="text-muted mb-4">Access the admin dashboard</p>
+                        <a href="{{ url_for('admin_login') }}" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-sign-in-alt me-2"></i>Admin Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Access Card -->
+            <div class="col-md-5">
+                <div class="card h-100">
+                    <div class="card-body text-center p-5">
+                        <div class="icon-large mb-3">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h3 class="mb-3">Student Access</h3>
+                        <p class="text-muted mb-4">Register or login to your account</p>
+                        <a href="{{ url_for('student_register') }}" class="btn btn-primary btn-lg w-100 mb-2">
+                            <i class="fas fa-user-plus me-2"></i>Register
+                        </a>
+                        <a href="{{ url_for('student_login') }}" class="btn btn-outline-primary btn-lg w-100">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="row justify-content-center g-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h4>Secure</h4>
+                        <p class="text-muted mb-0">Protected access with user authentication</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h4>Real-time</h4>
+                        <p class="text-muted mb-0">Instant attendance tracking and updates</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h4>Mobile-friendly</h4>
+                        <p class="text-muted mb-0">Works seamlessly on all devices</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center mt-5 py-4">
+        <p class="text-muted"> 2025 QR Attendance System. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

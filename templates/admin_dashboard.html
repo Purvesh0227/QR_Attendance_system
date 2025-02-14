@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - QR Attendance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <div class="d-flex align-items-center">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-qrcode me-2"></i> QR Attendance
+                </a>
+                <a class="nav-link ms-2" href="{{ url_for('admin_dashboard') }}">
+                    <i class="fas fa-home"></i> Home
+                </a>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    Administrator
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                    <li><a class="dropdown-item" href="{{ url_for('admin_logout') }}">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Home</a></li>
+                <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+        </nav>
+
+        <h2 class="mb-4">Admin Dashboard</h2>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">Session Management</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if active_session %}
+                            <div class="alert alert-info">
+                                <h5 class="alert-heading">Active Session</h5>
+                                <p class="mb-1"><strong>Name:</strong> {{ active_session.name }}</p>
+                                <p class="mb-1"><strong>Started:</strong> <span id="session-start-time"></span></p>
+                                <p class="mb-0"><strong>Duration:</strong> <span id="session-duration">00:00:00</span></p>
+                            </div>
+                            <div class="mb-3">
+                                <form action="{{ url_for('end_session') }}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fas fa-stop-circle"></i> End Session
+                                    </button>
+                                </form>
+                                <a href="{{ url_for('download_attendance') }}" class="btn btn-success ms-2">
+                                    <i class="fas fa-download"></i> Download Report
+                                </a>
+                            </div>
+                        {% else %}
+                            <form action="{{ url_for('create_session') }}" method="post">
+                                <div class="mb-3">
+                                    <label for="session_name" class="form-label">Session Name</label>
+                                    <input type="text" class="form-control" id="session_name" name="session_name" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-play-circle"></i> Start Session
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">QR Scanner</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if active_session %}
+                            <div id="reader"></div>
+                            <div id="scanResult" style="display: none;" class="alert mt-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0" id="scanResultIcon">
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h5 class="alert-heading mb-1" id="scanResultTitle"></h5>
+                                        <p class="mb-0" id="scanResultMessage"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i> Please start a session to enable QR scanning.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">Attendance List</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="attendanceList">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Roll Number</th>
+                                            <th>Name</th>
+                                            <th>Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="attendanceTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        {% if active_session %}
+            // Initialize QR Scanner
+            const html5QrcodeScanner = new Html5Qrcode("reader");
+            
+            const qrConfig = {
+                fps: 10,
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0
+            };
+
+            // Start scanner with front camera
+            Html5Qrcode.getCameras().then(devices => {
+                if (devices && devices.length) {
+                    html5QrcodeScanner.start(
+                        { facingMode: "user" },
+                        qrConfig,
+                        onScanSuccess,
+                        onScanFailure
+                    ).catch(err => {
+                        console.error("Error starting scanner:", err);
+                        showAlert('danger', 'Failed to start camera. Please ensure camera permissions are granted.');
+                    });
+                }
+            }).catch(err => {
+                console.error("Error getting cameras:", err);
+                showAlert('danger', 'Failed to access camera. Please ensure camera permissions are granted.');
+            });
+
+            function onScanSuccess(decodedText, decodedResult) {
+                $.post('/mark_attendance', {
+                    qr_data: decodedText
+                })
+                .done(function(response) {
+                    if (response.success) {
+                        showAlert('success', response.message, response.student);
+                        refreshAttendanceList();
+                    } else {
+                        if (response.student) {
+                            showAlert('warning', response.message, response.student);
+                        } else {
+                            showAlert('danger', response.message);
+                        }
+                    }
+                })
+                .fail(function() {
+                    showAlert('danger', 'Failed to mark attendance. Please try again.');
+                });
+            }
+
+            function onScanFailure(error) {
+                // Handle scan failure silently
+                console.warn(`QR scan error: ${error}`);
+            }
+
+            function showAlert(type, message, student = null) {
+                const alertDiv = document.getElementById('scanResult');
+                const iconDiv = document.getElementById('scanResultIcon');
+                const titleDiv = document.getElementById('scanResultTitle');
+                const messageDiv = document.getElementById('scanResultMessage');
+                
+                // Set alert class
+                alertDiv.className = `alert alert-${type} mt-3`;
+                
+                // Set icon based on type
+                let icon = '';
+                let title = '';
+                if (type === 'success') {
+                    icon = '<i class="fas fa-check-circle fa-2x text-success"></i>';
+                    title = 'Attendance Marked!';
+                } else if (type === 'warning') {
+                    icon = '<i class="fas fa-exclamation-circle fa-2x text-warning"></i>';
+                    title = 'Already Marked';
+                } else {
+                    icon = '<i class="fas fa-times-circle fa-2x text-danger"></i>';
+                    title = 'Error';
+                }
+                
+                iconDiv.innerHTML = icon;
+                
+                // Set title and message
+                if (student) {
+                    titleDiv.textContent = `${title} - ${student.name}`;
+                    messageDiv.textContent = `Roll Number: ${student.roll_number}`;
+                } else {
+                    titleDiv.textContent = title;
+                    messageDiv.textContent = message;
+                }
+                
+                // Show alert
+                alertDiv.style.display = 'block';
+                
+                // Hide after 3 seconds
+                setTimeout(() => {
+                    alertDiv.style.display = 'none';
+                }, 3000);
+            }
+
+            // Update session duration
+            const startTime = new Date('{{ active_session.start_timestamp }}');
+            function updateDuration() {
+                const now = new Date();
+                const diff = Math.floor((now - startTime) / 1000);
+                const hours = Math.floor(diff / 3600).toString().padStart(2, '0');
+                const minutes = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
+                const seconds = (diff % 60).toString().padStart(2, '0');
+                document.getElementById('session-duration').textContent = `${hours}:${minutes}:${seconds}`;
+                document.getElementById('session-start-time').textContent = startTime.toLocaleString();
+            }
+            setInterval(updateDuration, 1000);
+            updateDuration();
+
+            // Refresh attendance list
+            function refreshAttendanceList() {
+                fetch('/get_attendance')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const tbody = document.getElementById('attendanceTableBody');
+                            tbody.innerHTML = '';
+                            data.attendance.forEach(record => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${record.roll_number}</td>
+                                    <td>${record.name}</td>
+                                    <td>${record.time}</td>
+                                `;
+                                tbody.appendChild(row);
+                            });
+                        }
+                    });
+            }
+            
+            // Initial attendance list load
+            refreshAttendanceList();
+            // Refresh every 30 seconds
+            setInterval(refreshAttendanceList, 30000);
+        {% endif %}
+    </script>
+</body>
+</html>
