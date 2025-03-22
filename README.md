@@ -50,8 +50,9 @@ http://localhost:5000
 
 ## Admin Access
 
-- Username: purvesh0207
-- Password: Sayali@0227
+- Username: ********
+- Password: ********
+
 
 ## Student Access
 
